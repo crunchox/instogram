@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.albert.exstogram.upload"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/ivUpload"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="fitXY"/>
+
+    <Button
+        android:id="@+id/upload_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ivUpload"
+        android:text="CAMERA"
+        android:onClick="btnCamera_Clicked"/>
+
+    <Button
+        android:id="@+id/upload_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/upload_camera"
+        android:text="GALLERY"
+        android:onClick="btnGallery_Clicked"
+        />
+    <Button
+        android:id="@+id/upload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/upload_gallery"
+        android:text="UPLOAD"
+        android:onClick="btnUpload_Clicked"/>
+</RelativeLayout>
