@@ -1,12 +1,17 @@
 package com.example.albert.exstogram;
 
 import android.content.Intent;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +24,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText editTextUsername,editTextPassword;
     TextView textView;
@@ -28,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     long timeClicked;
     int duration=2500;
     boolean clicked=false;
+    RelativeLayout relativeLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +42,20 @@ public class MainActivity extends AppCompatActivity {
         MobileAds.initialize(this, "ca-app-pub-7627846972046326~3791030574");
         editTextUsername=(EditText)findViewById(R.id.edittext_username);
         editTextPassword=(EditText)findViewById(R.id.edittext_password);
+        editTextPassword.setOnKeyListener(new View.OnKeyListener(){
+
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (i==keyEvent.KEYCODE_ENTER&&keyEvent.getAction()==KeyEvent.ACTION_DOWN){
+                    BtnClicked(null);
+                }
+                return false;
+            }
+        });
         textView=(TextView)findViewById(R.id.textStatus);
         button=(Button)findViewById(R.id.button);
-
+        relativeLayout=(RelativeLayout)findViewById(R.id.relLayout);
+        relativeLayout.setOnClickListener(this);
         ParseInit();
         if(ParseUser.getCurrentUser()!=null){
             gotoHome();
@@ -51,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
             .build());
         }
     public void BtnClicked(View view){
+        TryLoginSignUp();
+    }
+    private void TryLoginSignUp(){
         if(loginMode){
             ParseUser.logInInBackground(editTextUsername.getText().toString(), editTextPassword.getText().toString(), new LogInCallback() {
                 @Override
@@ -79,23 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
-
-
-
-//        ParseObject obj=new ParseObject("Bukantabelmu");
-//        obj.put("name","Albert");
-//        obj.put("Nationality","INA");
-//        obj.saveInBackground(new SaveCallback() {
-//            @Override
-//            public void done(ParseException e) {
-//                if(e==null){
-//                    Toast.makeText(MainActivity.this, "Berhasil bos", Toast.LENGTH_SHORT).show();
-//                }else{
-//                    Toast.makeText(MainActivity.this, "Gagal coy"+e.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
     }
 
     public void ubahText(View view){
@@ -130,5 +133,22 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Press Back Again To Exit", Toast.LENGTH_SHORT).show();
             timeClicked = System.currentTimeMillis();
         }
+    }
+    private void HideBar() {
+        // Hide Action Bar
+        getSupportActionBar().hide();
+
+        // Hide Status Bar
+        if (Build.VERSION.SDK_INT < 16) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        InputMethodManager inputMethodManager=(InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),0);
     }
 }

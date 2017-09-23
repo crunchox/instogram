@@ -5,23 +5,34 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.onesignal.OneSignal;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
 
 public class upload extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -129,12 +140,82 @@ public class upload extends AppCompatActivity {
             public void done(ParseException e) {
                 if (e==null){
                     Toast.makeText(upload.this,"Upload DONE!!",Toast.LENGTH_SHORT).show();
+                    new PushTask().execute();
                 }else {
                     Toast.makeText(upload.this,"Upload FAIL!! "+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+    }
+
+
+
+    public class PushTask extends AsyncTask<Void,Void,String>{
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            try {
+                Log.i("Purwadhika", "Clicked");
+                String jsonResponse;
+
+                URL url = new URL("https://onesignal.com/api/v1/notifications");
+                HttpURLConnection con = (HttpURLConnection)url.openConnection();
+                con.setUseCaches(false);
+                con.setDoOutput(true);
+                con.setDoInput(true);
+
+                con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                con.setRequestProperty("Authorization", "Basic MzU2OGQ4ZjQtZGMzNC00NmFmLTkxYWUtNjEwZmI5NTVhMDcw");
+                con.setRequestMethod("POST");
+
+                String username= ParseUser.getCurrentUser().getUsername();
+
+                String strJsonBody = "{"
+                        +   "\"app_id\": \"692558fd-8c11-4e8d-b6c7-4fca6d5c1ea6\","
+                        +   "\"included_segments\": [\"All\"],"
+                        +   "\"headings\": {\"en\": \"Instagram Info\"},"
+                        +   "\"data\": {\"foo\": \"bar\"},"
+                        +   "\"contents\": {\"en\": \""+username + " have added a new image\"}"
+                        + "}";
+
+
+                System.out.println("strJsonBody:\n" + strJsonBody);
+
+                byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                con.setFixedLengthStreamingMode(sendBytes.length);
+
+                OutputStream outputStream = con.getOutputStream();
+                outputStream.write(sendBytes);
+
+                int httpResponse = con.getResponseCode();
+                System.out.println("httpResponse: " + httpResponse);
+
+                if (  httpResponse >= HttpURLConnection.HTTP_OK
+                        && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                    Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+                    jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                    scanner.close();
+                }
+                else {
+                    Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+                    jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                    scanner.close();
+                }
+
+                return jsonResponse;
+
+            } catch(Throwable t) {
+                t.printStackTrace();
+                return t.getMessage();
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
     }
 
     @Override
@@ -149,10 +230,12 @@ public class upload extends AppCompatActivity {
                 GetCamera();
             }
         }
+
     }
 
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
     }
+
 }

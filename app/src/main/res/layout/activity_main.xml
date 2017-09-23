@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context="com.example.albert.exstogram.MainActivity"
     android:background="@drawable/backgroundnya"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:id="@+id/relLayout">
 
     <ImageView
         android:id="@+id/logo"

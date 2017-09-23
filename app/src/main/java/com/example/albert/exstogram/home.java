@@ -46,7 +46,7 @@ public class home extends AppCompatActivity {
             @Override
             public void onAdFailedToLoad(int i) {
                 super.onAdFailedToLoad(i);
-                Toast.makeText(home.this, "FAILED", Toast.LENGTH_SHORT).show();
+                Toast.makeText(home.this, "AD FAILED", Toast.LENGTH_SHORT).show();
             }
 
             @Override

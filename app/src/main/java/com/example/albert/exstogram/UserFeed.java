@@ -39,7 +39,7 @@ public class UserFeed extends AppCompatActivity {
             @Override
             public void onAdFailedToLoad(int i) {
                 super.onAdFailedToLoad(i);
-                Toast.makeText(UserFeed.this, "FAILED "+ Integer.toString(i), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserFeed.this, "AD FAILED "+ Integer.toString(i), Toast.LENGTH_SHORT).show();
             }
 
             @Override
